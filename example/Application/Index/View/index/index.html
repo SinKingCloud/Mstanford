@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title><?=$MainSet['title']?> - <?=$MainSet['name']?></title>
+    <meta name="keywords" content="<?=$MainSet['keywords']?>" />
+    <meta name="description" content="<?=$MainSet['description']?>" />
+    <link href="https://cdn.bootcss.com/twitter-bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.js"></script>
+    <script src="https://cdn.bootcss.com/twitter-bootstrap/4.4.1/js/bootstrap.min.js"></script>
+    <script src="https://www.layuicdn.com/layer/layer.js"></script>
+    <script src="https://music.clwl.online/Player/player.min.js" id="SinKingMusic" key="1"></script>
+    <!--[if lt IE 9]>
+    <script src="//cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+  <![endif]-->
+</head>
+
+<body>
+    <div class="container">
+        <div class="col-xs-12 col-sm-10 col-md-8 col-lg-6 center-block" style="float: none;">
+            <div class="panel panel-primary" style="margin-top: 30px;">
+                <div class="panel-heading" style="text-align: center;">
+                    <h3 class="panel-title">
+                        <?=$MainSet['name']?>
+                    </h3>
+                    
+                </div>
+                <div class="panel-body" style="text-align: center;">
+                    <div class="list-group">
+                        <div class="list-group-item">
+                            <a href="https://www.clwl.online" target="_blank">
+                                <img src="https://q4.qlogo.cn/headimg_dl?dst_uin=<?=$MainSet['uin']?>&spec=100"
+                                    width="80px" style="border-radius: 50%;">
+                            </a>
+                            <div style="margin-top:5px">
+                                <a href="https://www.clwl.online/mhys/#respond" target="_blank"><span class="label label-danger">吐槽</span></a>
+                                <a href="http://github.com/sinkingcloud" target="_blank"><span class="label label-primary">GitHub</span></a>
+                                <a href="https://www.clwl.online/" target="_blank"><span class="label label-success">博客</span></a>
+                                <a href="//shang.qq.com/wpa/qunwpa?idkey=f58f9357790edc0f992349d4776a5eedca7453fa173a5786a3530010d0ea2d20" target="_blank"><span class="label label-info">QQ群</span></a>
+                            </div>
+                        </div>
+                        <div style="text-align:left">
+                            <pre>系统公告:<br>2020/06/08 : 修复源站未备案导致获取信息失败问题</pre>
+                        </div>
+                        <div id="login" class="list-group-item">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <div class="input-group-addon">登陆帐号</div>
+                                    <input type="text" name="user" value="" class="form-control" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <div class="input-group-addon">登陆密码</div>
+                                    <input type="text" name="pwd" value="" class="form-control" />
+                                </div>
+                            </div>
+                            <button type="button" id="submit" class="btn btn-primary btn-block">立即登陆</button>
+                        </div>
+                        <div id="panel" style="display: none;">
+                            <div class="list-group-item">
+                                <div class="input-group">
+                                    <div class="input-group-addon">选择操作</div>
+                                    <select name="sinkingoption" class="form-control">
+                                        <option value="0" selected>观看视频</option>
+                                        <option value="1">一键答题</option>
+                                        <option value="2">直播数据</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div id="choose" class="list-group-item" style="display: none;text-align: left;">
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <div class="input-group-addon">选择课程</div>
+                                        <select name="course" class="form-control">
+                                            <option value="0" selected>请选择课程</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <div class="input-group-addon">选择章节</div>
+                                        <select name="courses" class="form-control">
+                                            <option value="0" selected>请选择章节</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <div class="input-group-addon">视频内核</div>
+                                        <select name="type" class="form-control">
+                                            <option value="pc" selected>H5内核</option>
+                                            <option value="mobile">Flash内核</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <button type="button" id="video" class="btn btn-primary btn-block">立即刷课</button>
+                            </div>
+                            <div id="test" class="list-group-item" style="display: none;text-align: left;">
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <div class="input-group-addon">测试 ID </div>
+                                        <input type="number" name="testid" value="" class="form-control" />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <div class="input-group-addon">错误数量</div>
+                                        <input type="number" name="errors" value="" class="form-control" />
+                                    </div>
+                                </div>
+                                <button type="button" id="test_submit" class="btn btn-primary btn-block">立即答题</button>
+                            </div>
+                            <div id="live" class="list-group-item" style="display: none;text-align: left;">
+                                <button type="button" id="live_submit" class="btn btn-primary btn-block">立即查看</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style="text-align:center">
+            <a href="https://www.clwl.online/" target="_blank">Copyright © SinKingCloud</a>
+        </div>
+    </div>
+    <script>
+        function isMobile() {
+            if (/Android|SymbianOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Windows Phone|Midp/i.test(navigator.userAgent) && navigator.userAgent.indexOf("QQ/") == -1) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+        $(function () {
+            layer.alert("<?=$MainSet['notice']?>", { icon: 6 });
+            $('#submit').click(function () {
+                var user = $('input[name=user]').val();
+                var pwd = $('input[name=pwd]').val();
+                if (user == "" || pwd == "") {
+                    return layer.msg("请输入完整！");
+                }
+                layer.load(0);
+                $.ajax({
+                    url: "/GetUserInfo",
+                    type: "post",
+                    dataType: "json",
+                    data: { user: user, pwd: pwd },
+                    success: function (data) {
+                        layer.closeAll('loading');
+                        if (data.code != 1) {
+                            layer.alert(data.msg);
+                            return;
+                        }
+                        $("#login").hide();
+                        $("#panel").show();
+                        $("#choose").show();
+                        layer.msg(data.msg);
+                        setTimeout(function () {
+                            layer.load(0);
+                            $.ajax({
+                                url: "/GetCourseList",
+                                type: "post",
+                                dataType: "json",
+                                success: function (data) {
+                                    layer.closeAll('loading');
+                                    if (data.code != 1) {
+                                        layer.alert(data.msg);
+                                        return;
+                                    }
+                                    $.each(data.data, function (x, d) {
+                                        $("select[name=course]").append('<option value="' + d.id + '">' + d.name + '</option>');
+                                    });
+                                    layer.msg(data.msg);
+                                },
+                                error: function () {
+                                    layer.closeAll('loading');
+                                    layer.msg('网络错误！');
+                                }
+                            });
+                        }, 500);
+                    },
+                    error: function () {
+                        layer.closeAll('loading');
+                        layer.msg('网络错误！');
+                    }
+                });
+            });
+            $("select[name=sinkingoption]").change(function () {
+                if ($(this).val() == 0) {
+                    $("#choose").show();
+                    $("#test").hide();
+                    $("#live").hide();
+                } else if($(this).val() == 1){
+                    $("#test").show();
+                    $("#choose").hide();
+                    $("#live").hide();
+                }else{
+                    $("#live").show();
+                    $("#choose").hide();
+                    $("#test").hide();
+                }
+            });
+            $("select[name=course]").change(function () {
+                var id = $(this).val();
+                if (id == 0) {
+                    return layer.msg("请选择章节");
+                }
+                layer.load(0);
+                $.ajax({
+                    url: "/GetCourseInfo",
+                    type: "post",
+                    dataType: "json",
+                    data: { id: id },
+                    success: function (data) {
+                        layer.closeAll('loading');
+                        if (data.code != 1) {
+                            layer.alert(data.msg);
+                            return;
+                        }
+                        $("select[name=courses]").html('<option value="0" selected>请选择章节</option>');
+                        $.each(data.data, function (x, d) {
+                            $("select[name=courses]").append('<option value="' + d.id + '">' + d.name + '</option>');
+                        });
+                        if (isMobile()) {
+                            $("select[name=type]").val("mobile");
+                        }else{
+                            $("select[name=type]").val("pc");
+                        }
+                        layer.msg(data.msg);
+                    },
+                    error: function () {
+                        layer.closeAll('loading');
+                        layer.msg('网络错误！');
+                    }
+                });
+            });
+            $("#video").click(function () {
+                var id = $("select[name=courses]").val();
+                var id2 = $("select[name=course]").val();
+                var type = $("select[name=type]").val();
+                if (id == undefined || id <= 0 || id2 == undefined || id2 <= 0) {
+                    return layer.msg("请选择课程！");
+                }
+                layer.alert("本工具已支持手机端播放，如使用手机<br>请下载VIA浏览器，仅0.5M大小！<br>如无法播放请切换内核</br>请点击确定以继续！", { icon: 6 }, function () {
+                    window.open("/video?courseid=" + id + "&id=" + id2 + "&type=" + type);
+                });
+            });
+            $("#test_submit").click(function () {
+                var id = $("input[name=testid]").val();
+                var num = $("input[name=errors]").val();
+                if (id == undefined || id <= 0) {
+                    return layer.msg("请填写完整！");
+                }
+                layer.load(0);
+                $.ajax({
+                    url: "/test",
+                    type: "post",
+                    dataType: "json",
+                    data: { id: id, num: num },
+                    success: function (data) {
+                        layer.closeAll('loading');
+                        if (data.code != 1) {
+                            layer.alert(data.msg);
+                            return;
+                        }
+                        layer.msg(data.msg);
+                    },
+                    error: function () {
+                        layer.closeAll('loading');
+                        layer.msg('网络错误！');
+                    }
+                });
+            });
+            $("#live_submit").click(function(){
+                layer.alert("此功能仅为查看直播大数据</br>并不会帮您签到！</br>请点击确定以继续！", { icon: 6 }, function () {
+                    window.open("http://47.93.127.166:8072");
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

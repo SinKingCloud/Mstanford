@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title><?=$MainSet['title']?> - <?=$MainSet['name']?></title>
+    <link href="https://cdn.bootcss.com/twitter-bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.js"></script>
+    <script src="https://cdn.bootcss.com/twitter-bootstrap/4.4.1/js/bootstrap.min.js"></script>
+    <script src="https://www.layuicdn.com/layer/layer.js"></script>
+    <script src="/Public/polyvplayer.min.js"></script>
+    <!--[if lt IE 9]>
+    <script src="//cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+  <![endif]-->
+  <style>
+      .videobox{
+          text-align: center;
+      }
+      .thumbnail{
+          display: block;
+          padding: 4px;
+          margin-bottom: 20px;
+          line-height: 1.42857143;
+          background-color: #fff;
+          border-radius: 4px;
+          border: 0px;
+          -webkit-transition: border .2s ease-in-out;
+          -o-transition: border .2s ease-in-out;
+          transition: border .2s ease-in-out;
+          text-align: -webkit-center;
+      }
+  </style>
+</head>
+<body>
+    <div class="row" id="VideoPanel" style="text-align: -webkit-center;">
+    </div>
+    <script type="text/javascript">
+        var CronClearTimer = null;//定时清理器
+        var CronInsertTimer = null;//数据新增器
+        var SinKingCloud = {
+            /*
+             * 播放器列表
+             */
+            PlayerList: new Array(),
+            /*
+             * 创建播放器
+             */
+            CreateTask: function (VideoInfo) {
+                var choose = "player" + VideoInfo.id;
+                VideoInfo.choose = choose;
+                var html = '<div class="col-sm-6 col-md-4 "><div class="thumbnail videobox" id="'+choose+'"></div></div>';
+                var js = "var {choose}=polyvObject('#{choose}').videoPlayer({'width':'350px','height':'200px','vid':'{vid}','ts':'{ts}','sign':'{sign}','session_id':Math.random().toString().replace('.',''),'flashvars':{'autoplay':'1','ban_history_time':'on','ban_seek_by_limit_time':'off','param2':{uid}},'params':{'param2':{uid}},'df':'0'});SinKingCloud.PlayerList[{id}]={choose};";
+                $.each(VideoInfo, function (name, value) {
+                    re = new RegExp("{" + name + "}", "g");
+                    js = js.replace(re, value);
+                });
+                $("#VideoPanel").append(html);
+                setTimeout(function(){
+                    eval(js);
+                }, 1000);
+            },
+            /*
+             * 清理单个播放器
+             */
+            ClearPlayer: function (id) {
+                var choose = "player" + id;
+                $("#" + choose).remove();
+                SinKingCloud.PlayerList[id] = null;
+                eval("delete " + choose);
+            },
+            /*
+             * 清理多个播放器
+             */
+            ClearPlayers: function () {
+                for (let index = 0; index < SinKingCloud.PlayerList.length; index++) {
+                    var players = SinKingCloud.PlayerList[index];
+                    if (players != null && players != undefined) {
+                        if (players.j2s_getCurrentTime() >= players.j2s_getDuration()) {
+                            SinKingCloud.ClearPlayer(index);
+                            //发送ajax
+                        }
+                    } else {
+                        continue;
+                    }
+                }
+            },
+            /*
+             * 定时清理播放器
+             */
+            CronClear: {
+                Start: function (time) {
+                    time = time || 120000;
+                    CronClearTimer = setInterval(function() {
+                        SinKingCloud.ClearPlayers();
+                    }, time);
+                },
+                Stop: function () {
+                    clearInterval(CronClearTimer);
+                }
+            },
+            /*
+             * 定时添加播放器
+             */
+            CronInsert:{
+                Start: function (time) {
+                    time = time || 120000;
+                    CronInsertTimer = setInterval(function() {
+                        //ajax获取数据
+                    }, time);
+                },
+                Stop:function(){
+                    clearInterval(CronInsertTimer);
+                }
+            }
+        };
+        window.onload = function () {
+            $.ajax({
+                url: "/GetVideo",
+                type: "post",
+                dataType: "json",
+                data:{id:<?=$id?>,uid:<?=$uid?>,courseid:<?=$courseid?>},
+                success: function (data) {
+                    layer.closeAll('loading');
+                    if (data.code != 1) {
+                        layer.alert(data.msg);
+                        return;
+                    }
+                    $.each(data.data,function(x,d){
+                        SinKingCloud.CreateTask(d);
+                    });
+                    layer.msg(data.msg);
+                    setTimeout(function(){
+                        //SinKingCloud.CronClear.Start(10000)
+                    },2000);
+                },
+                error: function () {
+                    layer.closeAll('loading');
+                    layer.msg('网络错误！');
+                }
+            });
+        }
+    </script>
+</body>
+</html>
